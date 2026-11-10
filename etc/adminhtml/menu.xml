@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!--
+    Copyright © 2026 Roman Pasichnyk
+    SPDX-License-Identifier: OSL-3.0 OR AFL-3.0
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <!-- Under System > Other Settings, not under the AI Assistant item: the
+             page is needed with the admin chat off too (Zero > AI Assistant >
+             Chat in the Admin). -->
+        <add id="Zero_Mcp::connections" title="Claude Connections" translate="title" module="Zero_Mcp" sortOrder="50"
+             parent="Magento_Backend::system_other_settings" action="zero_mcp/connection/index" resource="Zero_Mcp::connections"/>
+    </menu>
+</config>

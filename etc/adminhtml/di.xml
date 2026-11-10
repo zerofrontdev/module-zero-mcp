@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!--
+    Copyright © 2026 Roman Pasichnyk
+    SPDX-License-Identifier: OSL-3.0 OR AFL-3.0
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="Magento\Backend\App\AbstractAction">
+        <plugin name="zero_mcp_deep_link" type="Zero\Mcp\Plugin\AdminDeepLink" sortOrder="10"/>
+    </type>
+    <type name="Magento\Backend\Model\Url">
+        <plugin name="zero_mcp_deep_link" type="Zero\Mcp\Plugin\AdminDeepLink"/>
+    </type>
+</config>

@@ -1,0 +1,98 @@
+{
+    "zero_mcp_client": {
+        "column": {
+            "client_id": true,
+            "client_name": true,
+            "redirect_uris": true,
+            "metadata": true,
+            "created_at": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    },
+    "zero_mcp_code": {
+        "column": {
+            "code_hash": true,
+            "client_id": true,
+            "user_id": true,
+            "redirect_uri": true,
+            "code_challenge": true,
+            "scope": true,
+            "resource": true,
+            "expires_at": true,
+            "created_at": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    },
+    "zero_mcp_token": {
+        "column": {
+            "token_id": true,
+            "user_id": true,
+            "client_id": true,
+            "client_name": true,
+            "access_hash": true,
+            "refresh_hash": true,
+            "scope": true,
+            "conversation_id": true,
+            "access_expires_at": true,
+            "refresh_expires_at": true,
+            "created_at": true,
+            "last_used_at": true,
+            "last_action": true,
+            "calls": true,
+            "hour_calls": true,
+            "hour_start": true,
+            "revoked_at": true,
+            "previous_refresh_hash": true,
+            "refreshed_at": true
+        },
+        "index": {
+            "ZERO_MCP_TOKEN_USER_ID": true,
+            "ZERO_MCP_TOKEN_PREVIOUS_REFRESH_HASH": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "ZERO_MCP_TOKEN_ACCESS_HASH": true,
+            "ZERO_MCP_TOKEN_REFRESH_HASH": true
+        }
+    },
+    "zero_mcp_draft": {
+        "column": {
+            "draft_id": true,
+            "token_id": true,
+            "conversation_id": true,
+            "key_hash": true,
+            "name": true,
+            "upload_ids": true,
+            "expires_at": true,
+            "created_at": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "ZERO_MCP_DRAFT_KEY_HASH": true
+        }
+    },
+    "zero_mcp_pending": {
+        "column": {
+            "pending_id": true,
+            "key_hash": true,
+            "code_hash": true,
+            "client_id": true,
+            "redirect_uri": true,
+            "state": true,
+            "code_challenge": true,
+            "scope": true,
+            "resource": true,
+            "expires_at": true,
+            "created_at": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "ZERO_MCP_PENDING_KEY_HASH": true,
+            "ZERO_MCP_PENDING_CODE_HASH": true
+        }
+    }
+}

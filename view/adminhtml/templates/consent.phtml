@@ -1,0 +1,49 @@
+<?php
+/**
+ * Copyright © 2026 Roman Pasichnyk
+ * SPDX-License-Identifier: OSL-3.0 OR AFL-3.0
+ *
+ * Connect Claude: allow or deny the connection waiting, or find one by its code.
+ *
+ * @var \Magento\Backend\Block\Template $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+$request = $block->getData('request');
+$action = $block->getUrl('zero_mcp/oauth/consent');
+?>
+<div class="zero-mcp-consent" style="display: grid; gap: 20px; max-width: 72ch">
+    <?php if ($request === null): ?>
+        <p><?= $escaper->escapeHtml(__('No connection is waiting here. Enter the code the connect page showed (requests last 10 minutes).')) ?></p>
+        <form method="post" action="<?= $escaper->escapeUrl($action) ?>" style="display: flex; gap: 10px; align-items: center">
+            <input type="hidden" name="form_key" value="<?= $escaper->escapeHtmlAttr($block->getFormKey()) ?>">
+            <label class="admin__visually-hidden" for="zero-mcp-code"><?= $escaper->escapeHtml(__('Code')) ?></label>
+            <input id="zero-mcp-code" name="code" class="admin__control-text" style="max-width: 14ch; font-family: monospace; text-transform: uppercase" autocomplete="off" required placeholder="ABCD-2345">
+            <button type="submit" class="action-secondary"><?= $escaper->escapeHtml(__('Find')) ?></button>
+        </form>
+    <?php else: ?>
+        <h2 style="margin: 0"><?= $escaper->escapeHtml(__('%1 asks to connect to this store', $request['client_name'])) ?></h2>
+        <p>
+            <?= $escaper->escapeHtml(__('The app gave this name itself. After you allow it, the browser goes back to %1.', $request['redirect_host'])) ?>
+        </p>
+        <p>
+            <?= $escaper->escapeHtml(__('The connection acts as you, %1, with your role\'s permissions: it reads what your role can read (orders, customers, products, settings) and makes the changes your role may make. It shows in System > Other Settings > Claude Connections, where it can be revoked.', $request['user'])) ?>
+        </p>
+        <div class="message message-warning"><div>
+            <?= $escaper->escapeHtml(__('Allow only if you started this yourself in your Claude app a moment ago. If someone sent you a link or a code, deny it.')) ?>
+        </div></div>
+        <?php if (!$request['allowed']): ?>
+            <div class="message message-error"><div>
+                <?= $escaper->escapeHtml(__('Your role has no AI Assistant, so it cannot connect: System > Permissions > User Roles > Role Resources > AI Assistant.')) ?>
+            </div></div>
+        <?php endif; ?>
+        <form method="post" action="<?= $escaper->escapeUrl($action) ?>" style="display: flex; gap: 10px; align-items: center">
+            <input type="hidden" name="form_key" value="<?= $escaper->escapeHtmlAttr($block->getFormKey()) ?>">
+            <input type="hidden" name="pending_id" value="<?= (int) $request['pending_id'] ?>">
+            <?php if ($request['allowed']): ?>
+                <button type="submit" name="decision" value="allow" class="action-primary"><?= $escaper->escapeHtml(__('Allow')) ?></button>
+            <?php endif; ?>
+            <button type="submit" name="decision" value="deny" class="action-secondary"><?= $escaper->escapeHtml(__('Deny')) ?></button>
+            <span class="note"><?= $escaper->escapeHtml(__('Waits until %1.', $request['expires'])) ?></span>
+        </form>
+    <?php endif; ?>
+</div>

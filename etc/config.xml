@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!--
+    Copyright © 2026 Roman Pasichnyk
+    SPDX-License-Identifier: OSL-3.0 OR AFL-3.0
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <zero_mcp>
+            <general>
+                <enabled>0</enabled>
+                <access_hours>24</access_hours>
+                <refresh_days>90</refresh_days>
+                <calls_per_hour>300</calls_per_hour>
+                <extra_redirect_uris/>
+                <admin_link>0</admin_link>
+                <notify_new>1</notify_new>
+                <notify_email/>
+                <admin_confirm>cancel_order,invoice_order,ship_order,comment_order,answer_quote_request,update_return,delete_waybill,delete_ukrposhta_shipment,set_settings,send_fiscal_receipts,update_product:price,update_product:special_price,update_product:qty,schedule_change:price,schedule_change:special_price</admin_confirm>
+                <registrations_per_hour>30</registrations_per_hour>
+            </general>
+        </zero_mcp>
+    </default>
+</config>

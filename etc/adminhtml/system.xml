@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<!--
+    Copyright © 2026 Roman Pasichnyk
+    SPDX-License-Identifier: OSL-3.0 OR AFL-3.0
+
+    A group in Zero > AI Assistant: the Claude connector.
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="zero_ai_assistant">
+            <group id="mcp" translate="label comment" type="text" sortOrder="30" showInDefault="1">
+                <label>Claude Connector</label>
+                <comment><![CDATA[Your store as a connector in Claude: the Claude app on a phone or computer uses the assistant's tools, commands and documentation with your Claude subscription, no API key. Add it in Claude as a custom connector with the URL <code>https://your-store/mcp</code>; the admin allows the connection in this admin (its own sign-in and two-step verification), and the connection has that admin user's role. System > Other Settings > Claude Connections lists and revokes them.]]></comment>
+                <field id="enabled" translate="label" type="select" sortOrder="10" showInDefault="1" canRestore="1">
+                    <label>Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <config_path>zero_mcp/general/enabled</config_path>
+                </field>
+                <field id="access_hours" translate="label comment" type="text" sortOrder="20" showInDefault="1" canRestore="1">
+                    <label>Access Token Lifetime (hours)</label>
+                    <validate>required-entry validate-digits validate-greater-than-zero</validate>
+                    <config_path>zero_mcp/general/access_hours</config_path>
+                    <comment>Claude renews it on its own with the refresh token.</comment>
+                </field>
+                <field id="refresh_days" translate="label comment" type="text" sortOrder="30" showInDefault="1" canRestore="1">
+                    <label>Connection Lifetime (days)</label>
+                    <validate>required-entry validate-digits validate-greater-than-zero</validate>
+                    <config_path>zero_mcp/general/refresh_days</config_path>
+                    <comment>After this the admin signs in again.</comment>
+                </field>
+                <field id="calls_per_hour" translate="label comment" type="text" sortOrder="40" showInDefault="1" canRestore="1">
+                    <label>Calls per Hour per Connection</label>
+                    <validate>required-entry validate-digits validate-greater-than-zero</validate>
+                    <config_path>zero_mcp/general/calls_per_hour</config_path>
+                </field>
+                <field id="registrations_per_hour" translate="label comment" type="text" sortOrder="42" showInDefault="1" canRestore="1">
+                    <label>Registrations per Hour per Address</label>
+                    <validate>validate-digits validate-greater-than-zero</validate>
+                    <config_path>zero_mcp/general/registrations_per_hour</config_path>
+                    <comment>How many times one address may register an OAuth client (Claude registers one per connection) within a clock hour; more get HTTP 429.</comment>
+                </field>
+                <field id="admin_link" translate="label comment" type="select" sortOrder="45" showInDefault="1" canRestore="1">
+                    <label>Link to the Admin on the Connect Page</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <config_path>zero_mcp/general/admin_link</config_path>
+                    <comment>The page Claude opens asks the admin to allow the connection in this admin. With Yes it links here; anyone who opens that public page then sees the admin's address. With No the admin opens the admin themselves.</comment>
+                </field>
+                <field id="notify_new" translate="label comment" type="select" sortOrder="46" showInDefault="1" canRestore="1">
+                    <label>Notify of New Connections</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <config_path>zero_mcp/general/notify_new</config_path>
+                    <comment>When an admin allows a connection: a message in the admin's notifications and an email with who, when and from where. A stolen admin password that connects Claude is seen at once.</comment>
+                </field>
+                <field id="notify_email" translate="label comment" type="text" sortOrder="46" showInDefault="1">
+                    <label>Send the Email To</label>
+                    <validate>validate-email</validate>
+                    <config_path>zero_mcp/general/notify_email</config_path>
+                    <comment>Empty: the store's General Contact (Stores > Configuration > General > Store Email Addresses).</comment>
+                    <depends><field id="notify_new">1</field></depends>
+                </field>
+                <field id="admin_confirm" translate="label comment" type="multiselect" sortOrder="47" showInDefault="1" canRestore="1">
+                    <label>Confirm in the Admin</label>
+                    <source_model>Zero\Mcp\Model\Config\Source\ChangingTools</source_model>
+                    <config_path>zero_mcp/general/admin_confirm</config_path>
+                    <can_be_empty>1</can_be_empty>
+                    <comment>Changes of these kinds wait in the admin (Claude Connections > Changes Waiting for You) and only the admin confirms them there; Claude cannot confirm them itself, even if something it reads tells it to. Other changes are confirmed in the conversation. An entry such as "update_product: price" covers only the changes that give that field. By default: orders' money, shipping and cancellations, emails to customers, deleting waybills, settings, fiscal receipts, and product price, special price and qty (also when scheduled). There is no refund tool.</comment>
+                </field>
+                <field id="extra_redirect_uris" translate="label comment" type="textarea" sortOrder="50" showInDefault="1">
+                    <label>Other Allowed Redirect URIs</label>
+                    <config_path>zero_mcp/general/extra_redirect_uris</config_path>
+                    <comment>One per line, for MCP clients other than Claude (Claude's own and localhost callbacks are always allowed).</comment>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

@@ -1,0 +1,79 @@
+<?php
+/**
+ * Copyright © 2026 Roman Pasichnyk
+ * SPDX-License-Identifier: OSL-3.0 OR AFL-3.0
+ *
+ * System > Other Settings > Claude Connections.
+ *
+ * @var \Magento\Backend\Block\Template $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+/** @var \Zero\Mcp\ViewModel\Adminhtml\Connections $vm */
+$vm = $block->getData('view_model');
+$connections = $vm->connections();
+$labels = ['live' => __('Live'), 'expired' => __('Expired'), 'revoked' => __('Revoked')];
+?>
+<div class="zero-mcp" style="display: grid; gap: 20px; max-width: 1200px">
+    <?php if (!$vm->isEnabled()): ?>
+        <div class="message message-notice"><div><?= $escaper->escapeHtml(__('The Claude connector is off: Stores > Configuration > Zero > AI Assistant > Claude Connector.')) ?></div></div>
+    <?php endif; ?>
+    <?php if ($waiting = $vm->waiting()): ?>
+        <div class="message message-warning"><div>
+            <?= $escaper->escapeHtml(__('%1 change(s) from Claude wait for your confirmation.', $waiting)) ?>
+            <a href="<?= $escaper->escapeUrl($vm->url('zero_mcp/change/index')) ?>"><?= $escaper->escapeHtml(__('Review')) ?></a>
+        </div></div>
+    <?php endif; ?>
+    <p style="max-width: 80ch">
+        <?= $escaper->escapeHtml(__('In the Claude app (Settings > Connectors > Add custom connector) enter this URL. Claude opens a page of this store: sign in to this admin in the same browser and allow the connection, or enter the page\'s code below. The connection has your role\'s permissions; every change still waits for your confirmation, and is journaled in the AI Assistant.')) ?>
+        <br><code style="font-size: 1.4rem"><?= $escaper->escapeHtml($vm->serverUrl()) ?></code>
+    </p>
+    <form method="post" action="<?= $escaper->escapeUrl($vm->url('zero_mcp/oauth/consent')) ?>" style="display: flex; gap: 10px; align-items: center">
+        <input type="hidden" name="form_key" value="<?= $escaper->escapeHtmlAttr($vm->formKey()) ?>">
+        <label for="zero-mcp-code"><?= $escaper->escapeHtml(__('Code from the connect page')) ?></label>
+        <input id="zero-mcp-code" name="code" class="admin__control-text" style="max-width: 14ch; font-family: monospace; text-transform: uppercase" autocomplete="off" required placeholder="ABCD-2345">
+        <button type="submit" class="action-secondary"><?= $escaper->escapeHtml(__('Find')) ?></button>
+    </form>
+    <?php if (!$connections): ?>
+        <p><?= $escaper->escapeHtml(__('No connections yet.')) ?></p>
+    <?php else: ?>
+        <table class="data-grid">
+            <thead>
+            <tr>
+                <th class="data-grid-th">#</th>
+                <th class="data-grid-th"><?= $escaper->escapeHtml(__('Admin user')) ?></th>
+                <th class="data-grid-th"><?= $escaper->escapeHtml(__('Client')) ?></th>
+                <th class="data-grid-th"><?= $escaper->escapeHtml(__('Connected')) ?></th>
+                <th class="data-grid-th"><?= $escaper->escapeHtml(__('Last call')) ?></th>
+                <th class="data-grid-th"><?= $escaper->escapeHtml(__('Calls')) ?></th>
+                <th class="data-grid-th"><?= $escaper->escapeHtml(__('Status')) ?></th>
+                <th class="data-grid-th"><span class="admin__visually-hidden"><?= $escaper->escapeHtml(__('Actions')) ?></span></th>
+            </tr>
+            </thead>
+            <tbody>
+            <?php foreach ($connections as $c): ?>
+                <?php $status = $vm->status($c); ?>
+                <tr>
+                    <td><?= (int) $c['token_id'] ?></td>
+                    <td><?= $escaper->escapeHtml(trim(($c['firstname'] ?? '') . ' ' . ($c['lastname'] ?? '')) ?: ($c['username'] ?? '#' . $c['user_id'])) ?> <small><?= $escaper->escapeHtml((string) ($c['username'] ?? '')) ?></small></td>
+                    <td><?= $escaper->escapeHtml($c['client_name']) ?></td>
+                    <td><?= $escaper->escapeHtml($vm->format($c['created_at'])) ?></td>
+                    <td>
+                        <?= $escaper->escapeHtml($vm->format($c['last_used_at'])) ?>
+                        <?php if ($c['last_action']): ?><br><code><?= $escaper->escapeHtml($c['last_action']) ?></code><?php endif; ?>
+                    </td>
+                    <td><?= (int) $c['calls'] ?></td>
+                    <td><?= $escaper->escapeHtml($labels[$status]) ?></td>
+                    <td>
+                        <?php if ($status === 'live'): ?>
+                            <form method="post" action="<?= $escaper->escapeUrl($vm->url('zero_mcp/connection/revoke', ['id' => $c['token_id']])) ?>" onsubmit="return confirm('<?= $escaper->escapeJs(__('Revoke this connection? Claude will ask for a new sign-in.')) ?>')">
+                                <input type="hidden" name="form_key" value="<?= $escaper->escapeHtmlAttr($vm->formKey()) ?>">
+                                <button type="submit" class="action-secondary"><?= $escaper->escapeHtml(__('Revoke')) ?></button>
+                            </form>
+                        <?php endif; ?>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
+    <?php endif; ?>
+</div>

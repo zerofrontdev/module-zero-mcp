@@ -1,0 +1,44 @@
+<?php
+/**
+ * Copyright © 2026 Roman Pasichnyk
+ * SPDX-License-Identifier: OSL-3.0 OR AFL-3.0
+ *
+ * Changes Waiting for You: what Claude proposed that is confirmed here.
+ *
+ * @var \Magento\Backend\Block\Template $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+/** @var \Zero\Mcp\ViewModel\Adminhtml\Changes $vm */
+$vm = $block->getData('view_model');
+$changes = $vm->changes();
+?>
+<div class="zero-mcp-changes" style="display: grid; gap: 20px; max-width: 80ch">
+    <p><?= $escaper->escapeHtml(__('Claude proposed these changes. They are done only when you confirm them here: Claude cannot confirm them itself. Check that each is what you asked for.')) ?></p>
+    <?php if (!$changes): ?>
+        <p><strong><?= $escaper->escapeHtml(__('Nothing is waiting.')) ?></strong></p>
+    <?php endif; ?>
+    <?php foreach ($changes as $change): ?>
+        <?php $preview = (array) $change['preview']; ?>
+        <section class="admin__fieldset-wrapper" style="border: 1px solid #ccc; padding: 16px 20px">
+            <h2 style="margin: 0 0 6px"><?= $escaper->escapeHtml($preview['title'] ?? $change['tool']) ?></h2>
+            <p class="note" style="margin: 0 0 12px">
+                #<?= (int) $change['action_id'] ?> · <code><?= $escaper->escapeHtml($change['tool']) ?></code>
+                · <?= $escaper->escapeHtml($change['client_name']) ?> · <?= $escaper->escapeHtml($vm->format((string) $change['created_at'])) ?>
+            </p>
+            <?php if (!empty($preview['lines'])): ?>
+                <dl style="display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; margin: 0 0 16px">
+                    <?php foreach ((array) $preview['lines'] as $label => $value): ?>
+                        <dt style="font-weight: 600"><?= $escaper->escapeHtml((string) $label) ?></dt>
+                        <dd style="margin: 0; white-space: pre-wrap; overflow-wrap: anywhere"><?= $escaper->escapeHtml(is_scalar($value) ? (string) $value : (string) json_encode($value, JSON_UNESCAPED_UNICODE)) ?></dd>
+                    <?php endforeach; ?>
+                </dl>
+            <?php endif; ?>
+            <form method="post" action="<?= $escaper->escapeUrl($vm->url('zero_mcp/change/decide')) ?>" style="display: flex; gap: 10px">
+                <input type="hidden" name="form_key" value="<?= $escaper->escapeHtmlAttr($vm->formKey()) ?>">
+                <input type="hidden" name="action_id" value="<?= (int) $change['action_id'] ?>">
+                <button type="submit" name="decision" value="confirm" class="action-primary"><?= $escaper->escapeHtml(__('Confirm')) ?></button>
+                <button type="submit" name="decision" value="cancel" class="action-secondary"><?= $escaper->escapeHtml(__('Cancel')) ?></button>
+            </form>
+        </section>
+    <?php endforeach; ?>
+</div>

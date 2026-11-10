@@ -1,0 +1,28 @@
+<!--
+    Copyright © 2026 Roman Pasichnyk
+    SPDX-License-Identifier: OSL-3.0 OR AFL-3.0
+
+    Self-contained on purpose: it renders in the adminhtml area, where Magento_Email has no header/footer
+    templates, so including the store's email header or footer would replace this notice with an error text.
+-->
+<!--@subject {{trans "New Claude connection to %store_name" store_name=$store_name}} @-->
+<!--@vars {
+"var user":"Admin user",
+"var client":"The app that connected",
+"var time":"When",
+"var ip":"From IP address",
+"var browser":"Browser",
+"var connections_url":"Claude Connections page",
+"var store_name":"Store name"
+} @-->
+<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px; line-height: 1.5; color: #222;">
+<p>{{trans "%user allowed %client to connect to %store_name as their admin user." user=$user client=$client store_name=$store_name}}</p>
+<table>
+    <tr><th align="left">{{trans "When"}}</th><td>{{var time}}</td></tr>
+    <tr><th align="left">{{trans "From"}}</th><td>{{var ip}}</td></tr>
+    <tr><th align="left">{{trans "Browser"}}</th><td>{{var browser}}</td></tr>
+</table>
+<p>{{trans "The connection has that user's role. If this was not them, revoke it at once in System > Other Settings > Claude Connections:"}}</p>
+<p><a href="{{var connections_url}}">{{var connections_url}}</a></p>
+<p>{{var store_name}}</p>
+</div>
